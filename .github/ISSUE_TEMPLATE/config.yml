@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Browse game profiles
+    url: https://seastwood.github.io/Nokcandu-Profiles/
+    about: Search the profiles others shared.
+  - name: Problem with a profile?
+    url: https://seastwood.github.io/Nokcandu-Profiles/
+    about: Open the profile and comment on it (and vote 👎 if it doesn't work for you).
+  - name: Bug or idea for Nokcandu itself
+    url: https://github.com/seastwood/Nokcandu/issues
+    about: The app's own issue tracker.
