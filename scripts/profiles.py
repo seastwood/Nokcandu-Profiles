@@ -143,6 +143,13 @@ def normalize(p):
     if p.get("rawMouseSmooth") is not None:
         if isinstance(p["rawMouseSmooth"], bool): out["rawMouseSmooth"] = p["rawMouseSmooth"]
         else: probs.append("rawMouseSmooth must be true or false")
+    if p.get("audioBuffer") is not None:
+        if p["audioBuffer"] in (10, 20, 40) and not isinstance(p["audioBuffer"], bool): out["audioBuffer"] = p["audioBuffer"]
+        else: probs.append("audioBuffer must be 10, 20 or 40")
+    dp = p.get("displayPixels")
+    if dp is not None:
+        if isinstance(dp, list) and len(dp) == 2 and all(isinstance(n, int) and not isinstance(n, bool) and 320 <= n <= 8192 for n in dp): out["displayPixels"] = dp
+        else: probs.append("displayPixels must be [width, height] in pixels")
     if p.get("disc") is not None:
         if isinstance(p["disc"], bool): out["disc"] = p["disc"]
         else: probs.append("disc must be true or false")
