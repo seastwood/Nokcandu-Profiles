@@ -120,7 +120,10 @@ def normalize(p):
             fc, vs, fl = perf.get("fpsCounter", False), perf.get("vsync", False), perf.get("fpsLimit", 0)
             if not (isinstance(fc, bool) and isinstance(vs, bool) and isinstance(fl, int) and not isinstance(fl, bool) and (fl == 0 or 10 <= fl <= 360)):
                 probs.append("performance values are invalid (fpsLimit 0 or 10–360)")
-            else: out["performance"] = {"fpsCounter": fc, "vsync": vs, "fpsLimit": fl}
+            else:
+                out["performance"] = {"fpsCounter": fc, "vsync": vs, "fpsLimit": fl}
+                if perf.get("hud") in ("fps", "graph", "full"): out["performance"]["hud"] = perf["hud"]
+                if perf.get("hudSize") in ("small", "medium", "large"): out["performance"]["hudSize"] = perf["hudSize"]
     fx = p.get("fixes")
     if fx is not None:
         if isinstance(fx, list) and all(f in FIXES for f in fx): out["fixes"] = fx
@@ -137,6 +140,9 @@ def normalize(p):
     if dr is not None:
         if isinstance(dr, list) and all(isinstance(d, str) and re.fullmatch(r"[D-Yd-y]", d) for d in dr): out["drives"] = [d.upper() for d in dr]
         else: probs.append("drives must be letters D–Y")
+    if p.get("rawMouseSmooth") is not None:
+        if isinstance(p["rawMouseSmooth"], bool): out["rawMouseSmooth"] = p["rawMouseSmooth"]
+        else: probs.append("rawMouseSmooth must be true or false")
     if p.get("disc") is not None:
         if isinstance(p["disc"], bool): out["disc"] = p["disc"]
         else: probs.append("disc must be true or false")
