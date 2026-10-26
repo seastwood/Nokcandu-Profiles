@@ -14,7 +14,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "seastwood/Nokcandu-Profiles")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 API = f"https://api.github.com/repos/{REPO}"
 SOURCES = {"steam", "battlenet", "installer", "disc", "folder"}
-GRAPHICS = {"dx9", "dx11", "d3dmetal", "ddraw", "wined3d"}
+GRAPHICS = {"dx9", "dx11", "d3dmetal", "dxmt", "ddraw", "wined3d"}
 RATINGS = {"works", "playable", "broken"}
 FIXES = {"cinematic"}
 BANNED = {"PATH", "HOME", "SHELL", "TMPDIR", "WINEPREFIX", "WINESERVER", "WINELOADER", "WINEARCH", "VK_DRIVER_FILES"}
@@ -146,6 +146,10 @@ def normalize(p):
     if p.get("audioBuffer") is not None:
         if p["audioBuffer"] in (10, 20, 40) and not isinstance(p["audioBuffer"], bool): out["audioBuffer"] = p["audioBuffer"]
         else: probs.append("audioBuffer must be 10, 20 or 40")
+    vs = p.get("virtualScreen")
+    if vs is not None:
+        if isinstance(vs, list) and len(vs) == 2 and all(isinstance(n, int) and not isinstance(n, bool) and 320 <= n <= 8192 for n in vs): out["virtualScreen"] = vs
+        else: probs.append("virtualScreen must be [width, height]")
     dp = p.get("displayPixels")
     if dp is not None:
         if isinstance(dp, list) and len(dp) == 2 and all(isinstance(n, int) and not isinstance(n, bool) and 320 <= n <= 8192 for n in dp): out["displayPixels"] = dp
@@ -177,7 +181,9 @@ def validate(number):
         api(f"/issues/{number}/labels", "POST", {"labels": [want]})
     # One status comment, updated in place.
     text = (MARK + "\n" + ("✅ **Published.** This profile is in the Game Profiles catalog (updates hourly). "
-            "Vote 👍 if it works for you, 👎 if it doesn't, and comment with tips." if ok else
+            "\n\n**To vote:** scroll up to the profile itself (the very top post, with the settings — not this comment) "
+            "and click the smiley-face button at its bottom left (Add reaction). Choose 👍 if it works for you or 👎 if it doesn't. "
+            "Votes show in Nokcandu within the hour. Comments with tips are welcome below." if ok else
             "⚠️ **Not published yet** — please edit the issue to fix:\n" + "\n".join(f"- {x}" for x in probs)))
     mine = [c for c in api(f"/issues/{number}/comments?per_page=100") if MARK in (c.get("body") or "")]
     if mine:

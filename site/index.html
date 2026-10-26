@@ -131,7 +131,7 @@ function render() {
     const good = g.list.filter(e => !reportedBroken(e)), bad = g.list.filter(reportedBroken);
     return `<details class="game" ${single ? "open" : ""}><summary><span class="title">${esc(g.title)}</span>
       <span class="badge ${g.rating}">${RATING[g.rating]}</span>
-      <span class="votes">${g.list.length} profile${g.list.length === 1 ? "" : "s"} · 👍 ${g.up} · updated ${esc(ago(g.newest))}</span></summary>
+      <span class="votes">${g.list.length} profile${g.list.length === 1 ? "" : "s"} · updated ${esc(ago(g.newest))}</span></summary>
       <div class="inner">${good.map(card).join("")}${bad.length ? `<details><summary>Reported not working (${bad.length})</summary>${bad.map(card).join("")}</details>` : ""}</div></details>`;
   }).join("") || `<div class="empty">No profile for that game yet. If you get it working, share it from Nokcandu so others can play too.</div>`;
   document.getElementById("more").hidden = gs.length <= shown;
