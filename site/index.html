@@ -72,7 +72,7 @@ function settings(p) {
   if (p.arguments) s.push("Options: " + p.arguments);
   if (p.environment) s.push(Object.entries(p.environment).map(([k, v]) => k + "=" + v).join(" "));
   if (p.rawMouse) s.push("Raw mouse " + p.rawMouse + "×");
-  const fixes = {cinematic: "Cinematic fix (LAV Filters)", d3d8to9: "DirectX 8 compatibility", "directx9-extras": "DirectX 9 extras", borderless: "Fill the screen (borderless)"};
+  const fixes = {cinematic: "Cinematic fix (LAV Filters)", d3d8to9: "DirectX 8 compatibility", "directx9-extras": "DirectX 9 extras", borderless: "Fullscreen (Borderless)"};
   for (const id of p.fixes || []) if (fixes[id]) s.push(fixes[id]);
   if (p.performance && (p.performance.fpsCounter || p.performance.vsync || p.performance.fpsLimit))
     s.push("Performance: " + [p.performance.fpsCounter && "FPS counter", p.performance.vsync && "vsync", p.performance.fpsLimit && p.performance.fpsLimit + " FPS limit"].filter(Boolean).join(", "));
