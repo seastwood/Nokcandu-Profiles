@@ -58,9 +58,11 @@ def normalize(p):
     probs = []
     if not isinstance(p, dict):
         return None, ["profile must be a JSON object"]
-    out = {"schema": 1}
-    if p.get("schema", 1) != 1:
+    out = {"schema": p.get("schema", 1)}
+    if type(out["schema"]) is not int or out["schema"] not in (1, 2):
         probs.append("unknown schema")
+    if (p.get("gameDisplay") is not None or p.get("rawMouseFrameSync") is not None) and out["schema"] != 2:
+        probs.append("these settings require profile schema 2")
     title = p.get("title")
     if not isinstance(title, str) or not (1 <= len(title.strip()) <= 100):
         probs.append("title must be 1–100 characters")
@@ -122,6 +124,9 @@ def normalize(p):
                 probs.append("performance values are invalid (fpsLimit 0 or 10–360)")
             else:
                 out["performance"] = {"fpsCounter": fc, "vsync": vs, "fpsLimit": fl}
+                if perf.get("lowLatency") is not None:
+                    if isinstance(perf["lowLatency"], bool): out["performance"]["lowLatency"] = perf["lowLatency"]
+                    else: probs.append("lowLatency must be true or false")
                 if perf.get("hud") in ("fps", "graph", "full"): out["performance"]["hud"] = perf["hud"]
                 if perf.get("hudSize") in ("small", "medium", "large"): out["performance"]["hudSize"] = perf["hudSize"]
     fx = p.get("fixes")
@@ -143,6 +148,19 @@ def normalize(p):
     if p.get("rawMouseSmooth") is not None:
         if isinstance(p["rawMouseSmooth"], bool): out["rawMouseSmooth"] = p["rawMouseSmooth"]
         else: probs.append("rawMouseSmooth must be true or false")
+    if p.get("rawMouseFrameSync") is not None:
+        if isinstance(p["rawMouseFrameSync"], bool): out["rawMouseFrameSync"] = p["rawMouseFrameSync"]
+        else: probs.append("rawMouseFrameSync must be true or false")
+    gd = p.get("gameDisplay")
+    if gd is not None:
+        sizes = [[800,600],[1024,768],[1280,800],[1280,960],[1440,900],[1600,900],[1920,1080],[1920,1200]]
+        if not isinstance(gd, dict) or set(gd) != {"recipe", "resolution", "menuCorrection"}:
+            probs.append("gameDisplay must contain only recipe, resolution and menuCorrection")
+        elif gd.get("recipe") != "bf1942" or gd.get("resolution") not in sizes or not all(type(n) is int for n in gd["resolution"]) or not isinstance(gd.get("menuCorrection"), bool):
+            probs.append("unsupported built-in display settings")
+        elif match.get("exeName", "").lower() != "bf1942.exe":
+            probs.append("BF1942 display settings require the BF1942.exe game match")
+        else: out["gameDisplay"] = gd
     if p.get("audioBuffer") is not None:
         if p["audioBuffer"] in (10, 20, 40) and not isinstance(p["audioBuffer"], bool): out["audioBuffer"] = p["audioBuffer"]
         else: probs.append("audioBuffer must be 10, 20 or 40")

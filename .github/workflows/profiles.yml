@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['site/**', 'scripts/profiles.py', '.github/workflows/profiles.yml']
+    paths: ['site/**', 'scripts/**', '.github/workflows/profiles.yml']
 permissions:
   contents: read
   issues: write
@@ -27,6 +27,8 @@ jobs:
       name: github-pages
     steps:
       - uses: actions/checkout@v4
+      - name: Test profile validation
+        run: python3 -B -m unittest discover -s scripts -p 'test_*.py'
       - name: Check the profile in this issue
         if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited' || github.event.action == 'reopened' || github.event.action == 'labeled')
         env:

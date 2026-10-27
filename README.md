@@ -36,3 +36,5 @@ Profiles are shared under [CC0 1.0](https://creativecommons.org/publicdomain/zer
 use them. The catalog scripts are MIT licensed like Nokcandu.
 
 Built-in optional component IDs: `cinematic`, `d3d8to9`, `directx9-extras`, `borderless`. These reference code shipped with Nokcandu; profiles cannot provide DLLs, scripts, download URLs, executable patches, or config-file edits. The latter three require a Nokcandu version with component-fix support and a standalone managed game environment. Applying a profile previews unavailable fixes; each installed component has its own Undo in the game's Fixes panel.
+
+Schema 2 profiles (Nokcandu 0.9.9+) preserve `rawMouseFrameSync` and an optional `gameDisplay` object containing only `recipe: "bf1942"`, a supported `[width, height]` resolution, and a boolean `menuCorrection`. BF1942 recipes require a BF1942.exe match and are checked again against the target installation. No patch bytes, config commands, or executable files are shared. Old schema 1 profiles remain valid. Performance settings retain `lowLatency` as well as the other documented controls.
