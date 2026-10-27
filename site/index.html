@@ -74,7 +74,7 @@ function settings(p) {
   if (p.rawMouse) s.push("Raw mouse " + p.rawMouse + "×");
   if (p.rawMouseFrameSync) s.push("Once-per-frame mouse");
   if (p.gameDisplay) s.push("BF1942 " + p.gameDisplay.resolution.join(" × ") + (p.gameDisplay.menuCorrection ? "; menu correction" : ""));
-  const fixes = {cinematic: "Cinematic fix (LAV Filters)", d3d8to9: "DirectX 8 compatibility", "directx9-extras": "DirectX 9 extras", borderless: "Fullscreen (Borderless)"};
+  const fixes = {cinematic: "Cinematic fix (LAV Filters)", d3d8to9: "DirectX 8 compatibility", "directx9-extras": "DirectX 9 extras", borderless: "Fullscreen (Borderless)", "cursor-visibility": "Hide stray Mac pointer"};
   for (const id of p.fixes || []) if (fixes[id]) s.push(fixes[id]);
   if (p.performance && (p.performance.fpsCounter || p.performance.vsync || p.performance.fpsLimit || p.performance.lowLatency))
     s.push("Performance: " + [p.performance.fpsCounter && "FPS counter", p.performance.vsync && "vsync", p.performance.lowLatency && "low latency", p.performance.fpsLimit && p.performance.fpsLimit + " FPS limit"].filter(Boolean).join(", "));
