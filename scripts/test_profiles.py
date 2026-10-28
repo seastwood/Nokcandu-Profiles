@@ -25,6 +25,25 @@ class ProfileCompleteness(unittest.TestCase):
         self.assertTrue(profiles.normalize(p)[1])
         p = self.profile(); p['match']['exeName'] = 'Other.exe'
         self.assertTrue(profiles.normalize(p)[1])
+    def test_bc2_recipe_requires_its_game_and_rejects_menu_patches(self):
+        p = self.profile(); p['title'] = 'Bad Company 2'; p['match']['exeName'] = 'BFBC2Game.exe'
+        p['gameDisplay'] = {'recipe': 'bfbc2', 'resolution': [1280,800], 'menuCorrection': False}
+        clean, errors = profiles.normalize(p)
+        self.assertEqual(errors, []); self.assertEqual(clean['gameDisplay'], p['gameDisplay'])
+        p['gameDisplay']['menuCorrection'] = True
+        self.assertTrue(profiles.normalize(p)[1])
+        p['gameDisplay']['menuCorrection'] = False; p['match']['exeName'] = 'Other.exe'
+        self.assertTrue(profiles.normalize(p)[1])
+
+    def test_bc2_desktop_recipe_is_portable_and_restricted(self):
+        p = self.profile(); p['match']['exeName'] = 'BFBC2Game.exe'
+        p['gameDisplay'] = {'recipe': 'bfbc2-desktop', 'resolution': [0,0], 'menuCorrection': False}
+        self.assertEqual(profiles.normalize(p)[1], [])
+        p['gameDisplay']['resolution'] = [1470,956]
+        self.assertTrue(profiles.normalize(p)[1])
+        p['gameDisplay']['resolution'] = [0,0]; p['gameDisplay']['menuCorrection'] = True
+        self.assertTrue(profiles.normalize(p)[1])
+
     def test_mouse_and_latency_flags_must_be_boolean(self):
         p = self.profile(); p['rawMouseFrameSync'] = 1
         self.assertTrue(profiles.normalize(p)[1])

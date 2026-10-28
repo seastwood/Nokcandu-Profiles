@@ -156,13 +156,17 @@ def normalize(p):
         else: probs.append("rawMouseFrameSync must be true or false")
     gd = p.get("gameDisplay")
     if gd is not None:
-        sizes = [[800,600],[1024,768],[1280,800],[1280,960],[1440,900],[1600,900],[1920,1080],[1920,1200]]
+        recipes = {
+            "bf1942": ("bf1942.exe", [[800,600],[1024,768],[1280,800],[1280,960],[1440,900],[1600,900],[1920,1080],[1920,1200]]),
+            "bfbc2": ("bfbc2game.exe", [[1024,768],[1280,800],[1440,900],[1920,1080],[1920,1200]]),
+            "bfbc2-desktop": ("bfbc2game.exe", [[0,0]])
+        }
         if not isinstance(gd, dict) or set(gd) != {"recipe", "resolution", "menuCorrection"}:
             probs.append("gameDisplay must contain only recipe, resolution and menuCorrection")
-        elif gd.get("recipe") != "bf1942" or gd.get("resolution") not in sizes or not all(type(n) is int for n in gd["resolution"]) or not isinstance(gd.get("menuCorrection"), bool):
+        elif gd.get("recipe") not in recipes or gd.get("resolution") not in recipes[gd["recipe"]][1] or not all(type(n) is int for n in gd["resolution"]) or not isinstance(gd.get("menuCorrection"), bool) or (gd["recipe"].startswith("bfbc2") and gd["menuCorrection"]):
             probs.append("unsupported built-in display settings")
-        elif match.get("exeName", "").lower() != "bf1942.exe":
-            probs.append("BF1942 display settings require the BF1942.exe game match")
+        elif match.get("exeName", "").lower() != recipes[gd["recipe"]][0]:
+            probs.append("display settings require the associated game's executable match")
         else: out["gameDisplay"] = gd
     if p.get("audioBuffer") is not None:
         if p["audioBuffer"] in (10, 20, 40) and not isinstance(p["audioBuffer"], bool): out["audioBuffer"] = p["audioBuffer"]
