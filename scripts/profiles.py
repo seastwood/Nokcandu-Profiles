@@ -16,7 +16,7 @@ API = f"https://api.github.com/repos/{REPO}"
 SOURCES = {"steam", "battlenet", "installer", "disc", "folder"}
 GRAPHICS = {"dx9", "dx11", "d3dmetal", "dxmt", "ddraw", "wined3d"}
 RATINGS = {"works", "playable", "broken"}
-FIXES = {"cinematic", "d3d8to9", "directx9-extras", "borderless", "cursor-visibility"}
+FIXES = {"cinematic", "d3d8to9", "directx9-extras", "borderless", "cursor-visibility", "openua-display"}
 BANNED = {"PATH", "HOME", "SHELL", "TMPDIR", "WINEPREFIX", "WINESERVER", "WINELOADER", "WINEARCH", "VK_DRIVER_FILES"}
 BANNED_PARTS = ["DYLD_", "LD_", "NOKCANDU", "WINEDLLPATH", "PRELOAD", "ICD", "VK_LAYER", "VK_ADD_"]
 APP = "{app}"
@@ -131,7 +131,10 @@ def normalize(p):
                 if perf.get("hudSize") in ("small", "medium", "large"): out["performance"]["hudSize"] = perf["hudSize"]
     fx = p.get("fixes")
     if fx is not None:
-        if isinstance(fx, list) and all(f in FIXES for f in fx): out["fixes"] = fx
+        if isinstance(fx, list) and all(f in FIXES for f in fx):
+            out["fixes"] = fx
+            if "openua-display" in fx and str(m.get("exeName", "")).lower() != "ua_source.exe":
+                probs.append("OpenUA display settings require the UA_source.exe game match")
         else: probs.append("unknown fix")
     prog = p.get("program")
     if prog is not None:

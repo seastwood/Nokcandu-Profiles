@@ -31,4 +31,14 @@ class ProfileCompleteness(unittest.TestCase):
         p = self.profile(); p['performance']['lowLatency'] = 'true'
         self.assertTrue(profiles.normalize(p)[1])
 
+    def test_openua_recipe_requires_its_own_executable(self):
+        p = self.profile(); p.pop('gameDisplay'); p['fixes'] = ['openua-display']
+        self.assertTrue(profiles.normalize(p)[1])
+        p['match'] = {'exeName': 'UA_source.exe'}
+        clean, errors = profiles.normalize(p)
+        self.assertEqual(errors, [])
+        self.assertEqual(clean['fixes'], ['openua-display'])
+        p['match'] = 'invalid'
+        self.assertTrue(profiles.normalize(p)[1])
+
 if __name__ == '__main__': unittest.main()
