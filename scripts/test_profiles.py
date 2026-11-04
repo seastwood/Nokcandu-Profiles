@@ -18,6 +18,13 @@ class ProfileCompleteness(unittest.TestCase):
     def test_new_settings_survive_catalog(self):
         p = self.profile(); clean, errors = profiles.normalize(p)
         self.assertEqual(errors, []); self.assertEqual(clean, p)
+    def test_scoped_launcher_schema_round_trips_and_future_schemas_fail(self):
+        p = self.profile(); p['schema'] = 3
+        p['fixes'] = ['shader-compiler-47', 'directx9-extras', 'd3d8to9']
+        clean, errors = profiles.normalize(p)
+        self.assertEqual(errors, []); self.assertEqual(clean, p)
+        p['schema'] = 4
+        self.assertIn('unknown schema', profiles.normalize(p)[1])
     def test_old_profiles_still_supported(self):
         p = self.profile(); p['schema'] = 1; p.pop('gameDisplay'); p.pop('rawMouseFrameSync')
         self.assertEqual(profiles.normalize(p)[1], [])

@@ -13,6 +13,7 @@ import json, os, re, sys, urllib.request, urllib.error
 REPO = os.environ.get("GITHUB_REPOSITORY", "seastwood/Nokcandu-Profiles")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 API = f"https://api.github.com/repos/{REPO}"
+SCHEMAS = {1, 2, 3}
 SOURCES = {"steam", "battlenet", "installer", "disc", "folder"}
 GRAPHICS = {"dx9", "dx11", "d3dmetal", "dxmt", "ddraw", "wined3d"}
 RATINGS = {"works", "playable", "broken"}
@@ -59,10 +60,10 @@ def normalize(p):
     if not isinstance(p, dict):
         return None, ["profile must be a JSON object"]
     out = {"schema": p.get("schema", 1)}
-    if type(out["schema"]) is not int or out["schema"] not in (1, 2):
+    if type(out["schema"]) is not int or out["schema"] not in SCHEMAS:
         probs.append("unknown schema")
-    if (p.get("gameDisplay") is not None or p.get("rawMouseFrameSync") is not None or p.get("nativeIPXFrame") is not None) and out["schema"] != 2:
-        probs.append("these settings require profile schema 2")
+    if (p.get("gameDisplay") is not None or p.get("rawMouseFrameSync") is not None or p.get("nativeIPXFrame") is not None) and out["schema"] not in (2, 3):
+        probs.append("these settings require profile schema 2 or newer")
     title = p.get("title")
     if not isinstance(title, str) or not (1 <= len(title.strip()) <= 100):
         probs.append("title must be 1–100 characters")
