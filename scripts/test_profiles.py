@@ -8,6 +8,13 @@ class ProfileCompleteness(unittest.TestCase):
                 'rawMouse': 1, 'rawMouseFrameSync': True,
                 'gameDisplay': {'recipe': 'bf1942', 'resolution': [1280,800], 'menuCorrection': True},
                 'performance': {'fpsCounter': True, 'vsync': False, 'fpsLimit': 60, 'lowLatency': True, 'hud': 'graph', 'hudSize': 'small'}}
+    def test_software_audio_and_unknown_fix_diagnostics(self):
+        p = self.profile(); p['fixes'] = ['bf1942-software-audio']
+        clean, errors = profiles.normalize(p)
+        self.assertEqual(errors, []); self.assertEqual(clean['fixes'], p['fixes'])
+        p['fixes'] = ['missing-test-fix', {}]
+        errors = profiles.normalize(p)[1]
+        self.assertTrue(any('missing-test-fix' in e for e in errors))
     def test_new_settings_survive_catalog(self):
         p = self.profile(); clean, errors = profiles.normalize(p)
         self.assertEqual(errors, []); self.assertEqual(clean, p)

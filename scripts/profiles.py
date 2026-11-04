@@ -16,7 +16,7 @@ API = f"https://api.github.com/repos/{REPO}"
 SOURCES = {"steam", "battlenet", "installer", "disc", "folder"}
 GRAPHICS = {"dx9", "dx11", "d3dmetal", "dxmt", "ddraw", "wined3d"}
 RATINGS = {"works", "playable", "broken"}
-FIXES = {"borderless", "bundled-vc-runtime", "cinematic", "cross-process-windows", "cursor-visibility", "d3d8to9", "directx9-extras", "ipx-networking", "native-ipx-networking", "openua-display", "shader-compiler-47", "ubisoft-browser"}
+FIXES = {"bf1942-software-audio", "borderless", "bundled-vc-runtime", "cinematic", "cross-process-windows", "cursor-visibility", "d3d8to9", "directx9-extras", "ipx-networking", "native-ipx-networking", "openua-display", "shader-compiler-47", "ubisoft-browser"}
 BANNED = {"PATH", "HOME", "SHELL", "TMPDIR", "WINEPREFIX", "WINESERVER", "WINELOADER", "WINEARCH", "VK_DRIVER_FILES"}
 BANNED_PARTS = ["DYLD_", "LD_", "NOKCANDU", "WINEDLLPATH", "PRELOAD", "ICD", "VK_LAYER", "VK_ADD_"]
 APP = "{app}"
@@ -131,11 +131,13 @@ def normalize(p):
                 if perf.get("hudSize") in ("small", "medium", "large"): out["performance"]["hudSize"] = perf["hudSize"]
     fx = p.get("fixes")
     if fx is not None:
-        if isinstance(fx, list) and all(f in FIXES for f in fx):
+        if isinstance(fx, list) and all(isinstance(f, str) and f in FIXES for f in fx):
             out["fixes"] = fx
             if "openua-display" in fx and str(m.get("exeName", "")).lower() != "ua_source.exe":
                 probs.append("OpenUA display settings require the UA_source.exe game match")
-        else: probs.append("unknown fix")
+        else:
+            if not isinstance(fx, list): probs.append("fixes must be a list of built-in fix IDs")
+            else: probs.append("unknown fixes: " + ", ".join(repr(f)[:120] for f in fx if not isinstance(f, str) or f not in FIXES))
     frame = p.get("nativeIPXFrame")
     if frame is not None:
         if type(frame) is int and frame in (1, 2, 3) and "native-ipx-networking" in out.get("fixes", []):
